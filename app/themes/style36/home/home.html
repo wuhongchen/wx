@@ -1,0 +1,38 @@
+{template 'common/header'}
+
+<style>
+	body{
+	font:{$_W['styles']['fontsize']} {$_W['styles']['fontfamily']};
+	color:{$_W['styles']['fontcolor']};
+	padding:0;
+	margin:0;
+	background-image:url('{if empty($_W['styles']['indexbgimg'])}./themes/style36/images/bg_index.jpg{else}{$_W['styles']['indexbgimg']}{/if}');
+	background-size:cover;
+	background-color:{if empty($_W['styles']['indexbgcolor'])}#000{else}{$_W['styles']['indexbgcolor']}{/if};
+	{$_W['styles']['indexbgextra']}
+	}
+	a{color:{$_W['styles']['linkcolor']}; text-decoration:none;}
+	{$_W['styles']['css']}
+	.box{width:93%;overflow:hidden;margin-top:80%;padding-left:7%;}
+	.box .box-item{float:left; text-align:center; display:block; text-decoration:none; outline:none; width:30%; margin:3% 3% 0 0; height:80px; position:relative; color:#FFF; border-radius:50%; background:#333; padding:5px 10px; overflow:hidden;}
+	.box-item.darkblue{background:rgba(24,155,234,0.9); opacity:0.8;}
+	.box-item.blue{background: rgba(92,188,242,0.9); opacity:0.8;}
+	.box .box-item i{display:inline-block; width:50px; height:45px; line-height:45px; font-size:35px; color:#FFF; overflow:hidden;}
+	.box .box-item span{color:{$_W['styles']['fontnavcolor']};display:block;font-size:14px; width:98%; text-align:center; overflow:hidden;}
+	#footer{color:#FFF;}
+</style>
+<div class="box">
+	{php $num = 1;}
+	{loop $navs $nav}
+	<a href="{$nav['url']}" class="box-item {if $num%2}darkblue{else}blue{/if}">
+		{if !empty($nav['icon'])}
+		<i style="background:url({$_W['attachurl']}{$nav['icon']}) no-repeat;background-size:cover;" class=""></i>
+		{else}
+		<i class="fa {$nav['css']['icon']['icon']}" style="{$nav['css']['icon']['style']}"></i>
+		{/if}
+		<span style="{$nav['css']['name']}" title="{$nav['name']}">{$nav['name']}</span>
+	</a>
+	{php $num++;}
+	{/loop}
+</div>
+{template 'common/footer'}

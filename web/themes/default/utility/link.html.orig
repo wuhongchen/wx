@@ -1,0 +1,59 @@
+<script type="text/javascript">
+	function clicklink(href) {
+		if($.isFunction({$callback})){
+			{$callback}(href);
+		}
+	}
+</script>
+<<<<<<< local
+<ul class="list-unstyled">
+	{loop $sysmenus $m}
+	<li><a href="javascript:;" onclick="clicklink('{$m['url']}');">{$m['title']}</a></li>
+=======
+<style type="text/css">
+.link-browser ul li { width: 120px; }
+.link-browser .panel .panel-body { padding:3px; }
+</style>
+<div class="link-browser">
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			系统默认链接
+		</div>
+		<div class="panel-body">
+			<ul class="nav nav-pills nav-justified" role="tablist">
+				{loop $sysmenus $m}
+					<li role="presentation"><a href="javascript:;" onclick="clicklink('{$m['url']}');">{$m['title']}</a></li>
+				{/loop}
+			</ul>
+		</div>
+	</div>
+	{loop $modulemenus $moduletype $modules}
+		<div class="page-header">
+			<!-- {$moduletype} -->
+			<h3>{$modtypes[$moduletype]['title']}</h3>
+		</div>
+		{loop $modules $modulekey $module}
+			<h4>{$module['title']}</h4>
+			{loop $linktypes $linktypekey $linktype}
+				{if !empty($module[$linktypekey])}
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							{$linktype}
+						</div>
+						<div class="panel-body">
+							<ul class="nav nav-pills nav-justified" role="tablist">
+								{loop $module[$linktypekey] $m}
+									<li role="presentation"><a href="javascript:;" onclick="clicklink('{$m['url']}');" title="{$m['title']}">{php echo cutstr($m['title'],6);}</a></li>
+								{/loop}
+							</ul>
+						</div>
+					</div>
+				{/if}
+			{/loop}
+		{/loop}
+>>>>>>> other
+	{/loop}
+<<<<<<< local
+</ul>=======
+</div>
+>>>>>>> other

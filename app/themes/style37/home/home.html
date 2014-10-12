@@ -1,0 +1,42 @@
+{template 'common/header'}
+<style>
+	body{
+	font:{$_W['styles']['fontsize']} {$_W['styles']['fontfamily']};
+	color:{$_W['styles']['fontcolor']};
+	padding:0;
+	margin:0;
+	background-image:url('{if !empty($_W['styles']['indexbgimg'])}{$_W['styles']['indexbgimg']}{/if}');
+	background-size:cover;
+	{$_W['styles']['indexbgextra']}
+	}
+	a{color:{$_W['styles']['linkcolor']}; text-decoration:none;}
+	{$_W['styles']['css']}
+	.box{margin:2.9% 2.8%;}
+	.box .box-item{display:block; height:4.6em; overflow:hidden; padding:5px;line-height:4.6em; position:relative; text-decoration:none; background:-webkit-linear-gradient(#f0f4f4 0%,#f0f4f4 56%,#f0f3f3 57%,#d2d6d6 100%);}
+	.box .box-item i{float:left; height:55px; width:55px; text-align:center;line-height:55px; border-radius:50%; vertical-align:middle; color:#fff; overflow:hidden;}
+	.box .box-item span{display:block; color:#fff; overflow:hidden;  width:50%; margin-left:10px; font-weight:bold;}
+	.box .box-item .next{position:absolute; right:10px; top:.6em; color:#fff;}
+</style>
+<div class="box clearfix">
+	{php $num = 0;}
+	{loop $navs $nav}
+	{php if($num == 0) $bg = '#fc5d57';}
+	{php if($num == 1) $bg = '#8d507a';}
+	{php if($num == 2) $bg = '#38799f';}
+	{php if($num == 3) $bg = '#59b7c1';}
+	{php if($num == 4) $bg = '#6abc8c';}
+	{php if($num == 5) $bg = '#676f7f';}
+	<a href="{$nav['url']}" class="box-item" style="background:{$bg}">
+		{if !empty($nav['icon'])}
+		<i style="background:url({$_W['attachurl']}{$nav['icon']}) no-repeat;background-size:cover; width:37px; height:37px; margin:9px"></i>
+		{else}
+		<i class="fa {$nav['css']['icon']['icon']}" style="{$nav['css']['icon']['style']}"></i>
+		{/if}
+		<span style="{$nav['css']['name']}" title="{$nav['name']}">{$nav['name']}</span>
+		<i class="fa fa-chevron-right next"></i>
+	</a>
+	{php $num++; if($num > 5) $num = 0;}
+	{/loop}
+</div>
+{template 'common/slide'}
+{template 'common/footer'}

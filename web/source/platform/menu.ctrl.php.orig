@@ -1,0 +1,83 @@
+<?php
+/**
+ * [WeEngine System] Copyright (c) 2013 WE7.CC
+ * $sn$
+ */
+defined('IN_IA') or exit('Access Denied');
+
+$current['designer'] = ' class="current"';
+<<<<<<< local
+checkaccount();
+
+=======
+session_start();
+>>>>>>> other
+$accs = uni_accounts();
+$accounts = array();
+if(!empty($accs)) {
+	foreach($accs as $acc) {
+		if($acc['level'] >= 1) {
+			$accounts[$acc['acid']] = array_elements(array('name', 'acid'), $acc);
+		}
+	}
+}
+$dos = array('display', 'save', 'remove', 'refresh');
+if($_W['isajax']) {
+	$post = $_GPC['__input'];
+	if(!empty($post['method'])) {
+		$do = $post['method'];
+	}
+}
+$do = in_array($do, $dos) ? $do : 'display';
+
+if($do == 'remove') {
+	foreach($accounts as $acc) {
+		$account = WeAccount::create($acc['acid']);
+		$ret = $account->menuDelete();
+		if(is_error($ret)) {
+			message("公众号 [{$acc['name']}] 发生错误. 详情: " . $ret['message'], 'refresh');
+		}
+	}
+	session_destroy();
+	unset($_SESSION['designer']);
+	message('已经成功删除菜单，请重新创建。', 'refresh');
+}
+
+if($do == 'refresh') {
+	session_destroy();
+	unset($_SESSION['designer']);
+	message('已清空缓存，将重新从公众平台接口获取菜单信息。', 'refresh');
+}
+
+if($do == 'save') {
+	$menus = $post['menus'];
+	
+	foreach($accounts as $acc) {
+		$account = WeAccount::create($acc['acid']);
+		$ret = $account->menuCreate($menus);
+		if(is_error($ret)) {
+			message("公众号 [{$acc['name']}] 发生错误. 详情: " . $ret['message'], 'refresh');
+		}
+	}
+	session_destroy();
+	unset($_SESSION['designer']);
+	exit('success');
+}
+
+if($do == 'display') {
+	$_W['page']['title'] = '菜单设计器 - 自定义菜单 - 高级功能';
+	if(!empty($accounts)) {
+		$settings = uni_settings($_W['uniacid'], array('menusite'));
+		$menus = !empty($settings['menusite']) ? $settings['menusite'] : array();
+		if(empty($menus) || !is_array($menus)) {
+			$acc = array_shift($accounts);
+			$account = WeAccount::create($acc['acid']);
+		
+			$menus = $_SESSION['designer'] = $account->menuQuery();
+		}
+	}
+	if(!is_array($menus)) {
+		$menus = array();
+	}
+}
+template('platform/menu');

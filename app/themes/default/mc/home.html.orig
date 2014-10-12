@@ -1,0 +1,106 @@
+{template 'common/header'}
+<style>
+body{background:#d2e6e9; font-family:Helvetica, Arial, sans-serif;}
+.main{background:url('http://stc.weimob.com/img/member/imgs/1.jpg') no-repeat center 0; background-size:100% 100%;}
+/*个人中心*/
+.pcenter-main{}
+.pcenter-main .head{position:relative; height:170px; background:url('http://stc.weimob.com/img/member/imgs/11.png') no-repeat center center; -webkit-background-size:100% auto;}
+.pcenter-main .head .ptool{float:right; display:inline-block; text-decoration:none; height:50px; line-height:50px; width:50px; text-align:center;font-size:25px; color:#749caa;}
+.pcenter-main .head .pdetail{height:120px; padding:30px; -webkit-box-sizing:border-box;}
+.pcenter-main .head .pdetail .img-circle{float:left; width:66px; height:66px; overflow:hidden; border:1px rgba(255,255,255,0.2) solid;}
+.pcenter-main .head .pdetail .img-circle img{width:66px;}
+.pcenter-main .head .pdetail .pull-left{margin-top:12px; margin-left:10px;}
+.pcenter-main .head .pdetail .pull-left span{display:block; color:#FFF; line-height:20px;}
+.pcenter-main .head .pdetail .pull-left span.name{font-size:20px;}
+.pcenter-main .head .pdetail .pull-left span.type{font-size:14px;}
+.pcenter-main .head .head-nav{height:50px; line-height:20px; padding-top:7px; background:rgba(0,0,0,0.2);}
+.pcenter-main .head .head-nav .head-nav-list{display:inline-block; float:left; text-decoration:none; color:#FFF;  width:25%; text-align:center; font-size:16px; background:-webkit-gradient(linear, 0 0, 0 100, from(rgba(255,255,255,0.5)), to(rgba(255,255,255,0.5)) ) no-repeat left center; -webkit-background-size:1px 75%;}
+.pcenter-main .head .head-nav .head-nav-list:first-child{background:none;}
+.pcenter-main .head .head-nav .head-nav-list > span{font-weight:bold; display:block; font-size:14px;}
+/*竖排导航条 通用*/
+.mnav-box ul{border-top:10px solid #e4e9e8; background:-webkit-gradient(linear,0 0, 0 10%,from(rgba(90,197,212,1)), to(rgba(90,197,212,1))) center top; -webkit-background-size:100% 2px; padding-top:2px; background-repeat:no-repeat;}
+.mnav-box ul:first-child{background:none; border-top:0; padding-top:0;}
+.mnav-box ul li{padding:10px 10px 10px 45px; border-bottom:1px solid #dddddd; position:relative;}
+.mnav-box ul li .mnav-box-list{color:#606366; font-size:15px; text-decoration:none; -webkit-box-sizing:border-box; overflow:hidden;}
+.mnav-box ul li .mnav-box-list .mnav-icon{display:inline-block; float:left; font-size:20px; width:35px; margin-left:-35px; color:#8dd1db;}
+.mnav-box ul li .mnav-box-list .mnav-title{display:inline-block; padding-right:35px;}
+.mnav-box ul li .mnav-box-list > .pull-right{display:inline-block; font-size:22px; line-height:0; color:#888; position:absolute; right:10px; top:10px;}
+.mnav-box ul li .mnav-box-list > .pull-right .btn{background:#56c6d6; color:#FFF; border:0; border-radius:1px; margin-top:-5px; width:100px; height:32px; font-size:17px; white-space:pre-line;}
+/*底部导航 通用*/
+body{padding-bottom:45px;}
+.footerbar{position:fixed; left:0; bottom:0; width:100%; height:45px; background:#f4f4f4; border-top:1px solid #d8d5d4;}
+.footerbar a{display:block; float:left; padding-top:3px; width:20%; height:45px; text-align:center; color:#7a7f83; text-decoration:none;}
+.footerbar a:first-child{border-left:0;}
+.footerbar a i{font-size:20px; display:block; color:#a2a6a9;}
+.footerbar a.active, .footerbar a.active i{color:#5ac5d4;}
+</style>
+<script>
+$(function() {
+	$(".main").height($(window).height());
+});
+$(window).resize(function(){
+	$(".main").height($(window).height());
+});
+</script>
+<div class="pcenter-main">
+	<div class="head">
+		<a class="ptool" href="{php echo url('mc/profile')}"><i class="fa fa-cogs"></i></a>
+		<div class="pdetail">
+			<div class="img-circle"><img src="{$profile['avatar']}" onerror="this.src='http://wx.we7.cc/resource/attachment/headimg_1.jpg'"></div>
+			<div class="pull-left">
+				<span class="name">{if !empty($profile['nickname'])}{$profile['nickname']}{else}<a href="{php echo url('mc/profile')}" style="color:red;">设置昵称</a>{/if}</span>
+				<span class="type"><i class="icon-certificate"></i> 普通会员</span>
+			</div>
+		</div>
+		<div class="head-nav">
+			<a class="head-nav-list" href="">优惠券<span>{$coupons['total']}</span></a>
+			<a class="head-nav-list" href="">代金券<span>{$tokens['total']}</span></a>
+			<a class="head-nav-list" href="">积分<span>{if isset($behavior) && isset($behavior['activity']) && isset($credits[$behavior['activity']])}{$credits[$behavior['activity']]}{else}0{/if}</span></a>
+			<a class="head-nav-list" href="">余额<span>{if isset($currency) && isset($behavior['currency']) && isset($credits[$behavior['currency']])}{$credits[$behavior['currency']]}{else}0{/if}</span></a>
+		</div>
+	</div>
+	<div class="mnav-box">
+		{loop $groups $name $navs}
+			<ul title="{$_W['account']['modules'][$name]['title']}">
+				{loop $navs $nav}
+				<li>
+					<a class="mnav-box-list" href="{$nav['url']}">
+						<i class="mnav-icon{if empty($nav['css']['icon']['icon'])} icon-money{else} {$nav['css']['icon']['icon']}{/if}"></i>
+						<span class="mnav-title">{$nav['name']}</span>
+						<span class="pull-right"><i class="icon-angle-right"></i></span>
+					</a>
+				</li>
+				{/loop}
+			</ul>
+		{/loop}
+		<ul title="其他">
+			{loop $others $name $nav}
+				<li>
+					<a class="mnav-box-list" href="{$nav['url']}">
+						<i class="mnav-icon{if empty($nav['css']['icon']['icon'])} icon-money{else} {$nav['css']['icon']['icon']}{/if}"></i>
+						<span class="mnav-title">{$nav['name']}</span>
+						<span class="pull-right"><i class="icon-angle-right"></i></span>
+					</a>
+				</li>
+			{/loop}
+			{if isset($setting['uc']['status']) && $setting['uc']['status'] == '1'}
+				<li>
+					{if $ucUser}
+					<a class="mnav-box-list" href="{php echo url('mc/mc/uc', array('foo' => 'unbind'))}">
+						<i class="mnav-icon icon-user"></i>
+						<span class="mnav-title">已绑定{$setting['uc']['title']}账号({$ucUser['username']}), 点击解除绑定</span>
+						<span class="pull-right"><i class="icon-angle-right"></i></span>
+					</a>
+					{else}
+					<a class="mnav-box-list" href="{php echo url('mc/mc/uc', array('foo' => 'bind'))}">
+						<i class="mnav-icon icon-user"></i>
+						<span class="mnav-title">绑定{$setting['uc']['title']}账号</span>
+						<span class="pull-right"><i class="icon-angle-right"></i></span>
+					</a>
+					{/if}
+				</li>
+			{/if}
+		</ul>
+	</div>
+</div>
+{template 'common/footer'}

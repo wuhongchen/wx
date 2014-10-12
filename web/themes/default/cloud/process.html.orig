@@ -1,0 +1,214 @@
+{template 'common/header-gw'}
+<ol class="breadcrumb">
+	<li><a href="./?refresh"><i class="fa fa-home"></i></a></li>
+	<li class=""><a href="{url 'system/welcome'}">云服务</a></li>
+	<li class="active">一键更新</li>
+</ol>
+<ul class="nav nav-tabs">
+	<li{if $do == 'upgrade'} class="active"{/if}><a href="{php echo url('cloud/upgrade');}">自动更新</a></li>
+	{if $do == 'shipping'}<li class="active"><a href="javscript:;">升级处理</a></li>{/if}
+</ul>
+
+<div class="clearfix">
+	{if $step == 'files'}
+	{if empty($packet['files'])}
+	<script>
+		location.href = '{url "cloud/upgrade/shipping" array("step" => "schemas")}';
+	</script>
+	{/if}
+	<div class="alert alert-warning">
+		正在更新系统文件, 请不要关闭窗口.
+	</div>
+	<div class="alert alert-info form-horizontal ng-cloak" ng-controller="processor">
+		<dl class="dl-horizontal">
+			<dt>整体进度</dt>
+			<dd>{{pragress}}</dd>
+			<dt>正在下载文件</dt>
+			<dd>{{file}}</dd>
+		</dl>
+		<dl class="dl-horizontal" ng-show="fails.length > 0">
+			<dt>下载失败的文件</dt>
+			<dd>
+				<p class="text-danger" ng-repeat="file in fails" style="margin:0;">{{file}}</p>
+			</dd>
+		</dl>
+	</div>
+	<script>
+		require(['angular'], function(angular){
+			angular.module('app', []).controller('processor', function($scope, $http){
+				$scope.files = {php echo json_encode($packet['files']);};
+				$scope.fails = [];
+				var total = $scope.files.length;
+				var i = 1;
+				var proc = function() {
+					var path = $scope.files.pop();
+					if(!path) {
+						if($scope.fails.length == 0 || confirm('有部分文件未成功更新, 是否进行下一步操作.')) {
+							setTimeout(function(){
+								location.href = '{url "cloud/upgrade/shipping" array("step" => "schemas")}';
+							}, 2000);
+						}
+						return;
+					}
+					$scope.file = path;
+					$scope.pragress = i + '/' + total;
+					var params = {path: path};
+					$http.post(location.href, params).success(function(dat){
+						i++;
+						if(dat != 'success') {
+							$scope.fails.push(path);
+						}
+						proc();
+					}).error(function(){
+						i++;
+						$scope.fails.push(path);
+						proc();
+					});
+				}
+				proc();
+			});
+			angular.bootstrap(document, ['app']);
+		});
+	</script>
+	{/if}
+	{if $step == 'schemas'}
+	{if empty($packet['schemas'])}
+	<script>
+		location.href = '{url "cloud/upgrade/shipping" array("step" => "scripts")}';
+	</script>
+	{/if}
+	<div class="alert alert-warning">
+		正在更新数据库, 请不要关闭窗口.
+	</div>
+	<div class="alert alert-info form-horizontal ng-cloak" ng-controller="processor">
+		<dl class="dl-horizontal">
+			<dt>整体进度</dt>
+			<dd>{{pragress}}</dd>
+			<dt>正在处理数据表</dt>
+			<dd>{{schema}}</dd>
+		</dl>
+		<dl class="dl-horizontal" ng-show="fails.length > 0">
+			<dt>处理失败的数据表</dt>
+			<dd>
+				<p class="text-danger" ng-repeat="schema in fails" style="margin:0;">{{schema}}</p>
+			</dd>
+		</dl>
+	</div>
+	<script>
+		require(['angular'], function(angular){
+			angular.module('app', []).controller('processor', function($scope, $http){
+				$scope.schemas = {php echo json_encode($schemas);};
+				$scope.fails = [];
+				var total = $scope.schemas.length;
+				var i = 1;
+				var error = function() {
+					require(['util'], function(u){
+						u.message('未能成功执行处理数据库, 请联系开发商解决. ');
+					});
+				}
+				var proc = function() {
+					var schema = $scope.schemas.pop();
+					if(!schema) {
+						if($scope.fails.length > 0) {
+							error();
+						} else {
+							setTimeout(function(){
+								location.href = '{url "cloud/upgrade/shipping" array("step" => "scripts")}';
+							}, 2000);
+							return;
+						}
+					}
+					$scope.schema = schema;
+					$scope.pragress = i + '/' + total;
+					var params = {table: schema};
+					$http.post(location.href, params).success(function(dat){
+						i++;
+						if(dat != 'success') {
+							$scope.fails.push(schema)
+						}
+						proc();
+					}).error(function(){
+						i++;
+						$scope.fails.push(schema);
+						proc();
+					});
+				}
+				proc();
+			});
+			angular.bootstrap(document, ['app']);
+		});
+	</script>
+	{/if}
+	{if $step == 'scripts'}
+	{if empty($upgrade['scripts'])}
+	<script>
+		location.href = '{url "cloud/upgrade"}';
+	</script>
+	{/if}
+	<div class="alert alert-warning">
+		正在数据迁移及清理操作, 请不要关闭窗口.
+	</div>
+	<div class="alert alert-info form-horizontal ng-cloak" ng-controller="processor">
+		<dl class="dl-horizontal">
+			<dt>整体进度</dt>
+			<dd>{{pragress}}</dd>
+			<dt>正在处理</dt>
+			<dd>{{script}}<br />{{message}}</dd>
+		</dl>
+		<dl class="dl-horizontal" ng-show="fails.length > 0">
+			<dt>处理失败的操作</dt>
+			<dd>
+				<p class="text-danger" ng-repeat="script in fails" style="margin:0;">{{script}}</p>
+			</dd>
+		</dl>
+	</div>
+	<script>
+		require(['angular'], function(angular){
+			angular.module('app', []).controller('processor', function($scope, $http){
+				$scope.scripts = {php echo json_encode($scripts);};
+				$scope.fails = [];
+				var total = $scope.scripts.length;
+				var i = 1;
+				var error = function() {
+					require(['util'], function(u){
+						u.message('未能成功执行清理升级操作, 请联系开发商. ');
+					});
+				}
+				var proc = function() {
+					var script = $scope.scripts.pop();
+					if(!script) {
+						if($scope.fails.length > 0) {
+							error();
+						} else {
+							require(['util'], function(u){
+								u.message('已经成功执行升级操作! <br> 由于数据库更新, 可能会产生多余的字段. 你可以按照需要删除.', '{url "system/database/trim"}');
+							});
+							return;
+						}
+					}
+					$scope.script = script.fname;
+					$scope.message = script.message;
+					$scope.pragress = i + '/' + total;
+					var params = {fname: script.fname};
+					$http.post(location.href, params).success(function(dat){
+						i++;
+						if(dat != 'success') {
+							$scope.fails.push(script.fname)
+							error();
+							return;
+						}
+						proc();
+					}).error(function(){
+						i++;
+						$scope.fails.push(script.fname);
+						error();
+					});
+				}
+				proc();
+			});
+			angular.bootstrap(document, ['app']);
+		});
+	</script>
+	{/if}
+</div>
+{template 'common/footer-gw'}

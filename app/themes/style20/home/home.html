@@ -1,0 +1,33 @@
+{template 'common/header'}
+{template 'common/slide'}
+<style>
+	body{
+	font:{$_W['styles']['fontsize']} {$_W['styles']['fontfamily']};
+	color:{$_W['styles']['fontcolor']};
+	padding:0;
+	margin:0;
+	background-image:url('{if !empty($_W['styles']['indexbgimg'])}{$_W['styles']['indexbgimg']}{/if}');
+	background-size:cover;
+	background-color:{if empty($_W['styles']['indexbgcolor'])}#f5f5f5{else}{$_W['styles']['indexbgcolor']}{/if};
+	{$_W['styles']['indexbgextra']}
+	}
+	.box{width:100%;overflow:hidden;margin-top:10px;}
+	.box .box-item{float:left; text-align:center; display:block; text-decoration:none; background-color:#eeeeee; outline:none; width:30.9%; padding:10px; margin:0 2% 5% 0; height:90px; color:#333;}
+	.box .box-item i{display:inline-block;width:50px;height:50px;line-height:50px;font-size:35px; vertical-align:middle;}
+	.box .box-item span{display:inline-block; width:98%; height:2.9em; line-height:2.9em; overflow:hidden; color:#797979; font-weight:bold;}
+	.box .discount{display:block; width:30%; height:90px; margin:0 2% 5% 0; background-color:#60c8b7; color:#ffffff; float:left;}
+	.box .item{display:block; width:58%; height:90px; background:#b45075;}
+</style>
+<div class="box clearfix">
+	{loop $navs $nav}
+	<a href="{$nav['url']}" class="box-item">
+		{if !empty($nav['icon'])}
+		<i style="background:url({$_W['attachurl']}{$nav['icon']}) no-repeat;background-size:cover;{$nav['css']['icon']['style']}"></i>
+		{else}
+		<i class="fa {$nav['css']['icon']['icon']}" style="{$nav['css']['icon']['style']}"></i>
+		{/if}
+		<span style="{$nav['css']['name']}" title="{$nav['name']}">{$nav['name']}</span>
+	</a>
+	{/loop}
+</div>
+{template 'common/footer'}

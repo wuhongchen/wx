@@ -1,0 +1,19 @@
+{template 'common/header'}
+<style type="text/css">
+body{padding:0;margin:0;background-image:url('{if empty($_W['styles']['indexbgimg'])}./themes/default/images/bg_index.jpg{else}{$_W['styles']['indexbgimg']}{/if}');background-size:cover;}
+.home-container span{display:block; padding:0 5px; overflow:hidden; color:#cccccc; width:95%;}
+.home-container i{display:block;height:45px; margin: 5px auto; font-size:35px; padding-top:10px; width:45px;}
+</style>
+<div class="home-container">
+	{loop $navs $nav}
+	<a href="{$nav['url']}" class="tile text-center">
+		{if !empty($nav['icon'])}
+		<i style="background:url({$_W['attachurl']}{$nav['icon']}) no-repeat;background-size:cover; {$nav['css']['icon']['style']}"></i>
+		{else}
+		<i class="fa {$nav['css']['icon']['icon']}" style="{$nav['css']['icon']['style']}"></i>
+		{/if}
+		<span style="{$nav['css']['name']}" title="{$nav['name']}">{$nav['name']}</span>
+	</a>
+	{/loop}
+</div>
+{template 'common/footer'}

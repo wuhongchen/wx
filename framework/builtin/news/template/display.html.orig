@@ -1,0 +1,121 @@
+<div class="panel panel-default">
+	<div class="panel-heading">
+		回复内容
+	</div>
+	<ul class="list-group reply-container">
+		<li class="list-group-item" ng-repeat="item in context.items">
+			<div ng-hide="item.saved">
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">标题</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" placeholder="添加图文消息的标题" name="titles[]" ng-model="item.title" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">封面</label>
+					<div class="col-sm-10" ng-invoker="context.bind($index, item);">
+						{php echo tpl_form_field_image('thumbs[]', '', '', array('width' => 400, 'extras' => array('text' => 'ng-model="item.thumb"')));}
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">描述</label>
+					<div class="col-sm-10">
+						<textarea class="form-control" placeholder="添加图文消息的简短描述" name="descriptions[]" ng-model="item.description"></textarea>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-offset-2 col-md-offset-2 col-lg-offset-1 col-xs-12 col-sm-10 col-md-10 col-lg-11">
+						<label class="checkbox-inline">
+							<input type="checkbox" value="data" ng-model="item.showContent" /> 是否编辑图文详情
+						</label>
+						<span class="help-block">编辑详情可以展示这条图文的详细内容, 可以选择不编辑详情, 那么这条图文将直接链接至下方的原文地址中.</span>
+					</div>
+				</div>
+				<div class="form-group" ng-show="item.showContent">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">详情</label>
+					<div class="col-sm-10">
+						<textarea class="form-control" name="contents[]" ng-editor="item.content"></textarea>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">文章来源</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" placeholder="图文消息的来源地址" name="urls[]" ng-model="item.url" />
+					</div>
+				</div>
+			</div>
+			<div class="row" ng-show="item.saved">
+				<div class="col-sm-5">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h4 class="form-control-static">{{item.title}}</h4>
+							<span class="help-block">{php echo date('m月d日')}</span>
+							<img class="img-rounded" ng-src="{{item.src}}" style="width:100%;height:12em;" />
+							<span class="help-block">{{item.description}}</span>
+						</div>
+						<div class="panel-footer" style="border-top:0;">
+							<a ng-href="{{item.url}}" href="javascrit:;" target="_blank" class="btn btn-defualt btn-block">查看原文</a>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-md-offset-2 col-lg-offset-1 col-xs-12 col-sm-10 col-md-10 col-lg-11">
+					<a href="javascript:;" class="btn btn-default" ng-click="context.saveItem(item);">{{item.saved ? '编辑' : '预览'}}</a>
+					<a href="javascript:;" class="btn btn-default" ng-click="context.removeItem(item);">删除</a>
+				</div>
+			</div>
+		</li>
+	</ul>
+	<input type="hidden" name="replies" />
+	<div class="panel-footer">
+		<a href="javascript:;" class="btn btn-default" ng-click="context.addItem();">添加回复条目</a>
+		<span class="help-block">添加多条回复内容时, 随机回复其中一条</span>
+	</div>
+</div>
+<script>
+	window.initReplyController = function($scope) {
+		$scope.context = {};
+		$scope.context.items = {php echo json_encode($replies)};
+		if(!$.isArray($scope.context.items)) {
+			$scope.context.items = [];
+		}
+		angular.forEach($scope.context.items, function(v, k){
+			if(v.content != '')
+				v.showContent = true;
+			v.saved = true;
+		});
+		if($scope.context.items.length == 0) {
+			$scope.context.items.push({});
+		}
+		$scope.context.bind = function(i, v) {
+			$('.reply-container .list-group-item').eq(i).find(':text[name="thumbs[]"]').parent().next().find('img').attr('src', v.src);
+		};
+		$scope.context.addItem = function(){
+			$scope.context.items.push({});
+		};
+		$scope.context.saveItem = function(item){
+			item.saved = !item.saved;
+		};
+		$scope.context.removeItem = function(item) {
+			require(['underscore'], function(_){
+				$scope.context.items = _.without($scope.context.items, item);
+				$scope.$digest();
+			});
+		}
+	};
+	window.validateReplyForm = function(form, $, _, util, $scope) {
+		$scope.$digest();
+		var error = false;
+		angular.forEach($scope.context.items, function(v, k){
+			if(!v.title || $('.reply-container .list-group-item').eq(k).find(':text[name="thumbs[]"]').val() == '') {
+				error = true;
+			}
+		});
+		if(error) {
+			util.message('必须输入标题和缩略图.');
+			return false;
+		}
+		return true;
+	};
+</script>

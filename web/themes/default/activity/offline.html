@@ -1,0 +1,6 @@
+{template 'common/header'}
+<ul class="nav nav-tabs">
+	<li{if $do == 'introduce'} class="active"{/if}><a href="{php echo url('activity/offline');}">功能说明</a></li>
+	<li{if $do == 'clerk'} class="active"{/if}><a href="{php echo url('activity/offline/clerk');}">店员管理</a></li>
+</ul>
+{template 'common/footer'}

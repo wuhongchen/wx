@@ -1,0 +1,71 @@
+{template 'common/header-gw'}
+	<ol class="breadcrumb">
+		<li><a href="./?refresh"><i class="fa fa-home"></i></a></li>
+		<li class="active">公众号列表</li>
+	</ol>
+	<div class="clearfix" style="margin-bottom:5em;">
+		<form action="">
+			<input type="hidden" name="a" value="account">
+			<input type="hidden" name="c" value="display">
+			<div class="form-group">
+				<div class="input-group">
+					<input type="text" class="form-control" placeholder="请输入微信公众号名称" name="keyword" value="{$_GPC['keyword']}">
+					<div class="input-group-btn">
+						<button class="btn btn-default"><i class="icon-search"></i> 搜索</button>
+					</div>
+				</div>
+			</div>
+		</form>
+		<div class="input-group">
+			<a class="btn btn-primary" href="{url 'account/post'}"><i class="fa fa-plus"></i> 添加公众号</a>
+		</div>
+	
+		<ul class="list-unstyled">
+		
+		{loop $list $row}
+			<li>
+				<div class="account-avatar"><img src="{if $account[$row['uniacid']][0]['headimg'] == 1}{$_W['attachurl']}headimg_{$account[$row['uniacid']][0]['weid']}.jpg?weid=1{else}{$default_img}{/if}" class="img-circle"><span class="img-circle"></span>{if !empty($row['details'])}<i class="img-circle" title="查看子公众号"></i>{/if}</div>
+				<div class="account-content">
+					<p>{$row['name']}</p>
+					<p>权限组：<span>{$row['group']['name']}</span></p>
+					{if empty($row['details'])}<p></p>{/if}
+				</div>
+				<div class="account-btn">
+					<a href="{php echo url('account/bind/post', array('uniacid' => $row['uniacid']))}" class="btn btn-default"><i class="fa fa-plus"></i> <span>添加子公众号</span></a>
+					<a href="{php echo url('account/details', array('acid' => $i['acid'], 'uniacid' => $row['uniacid']))}" class="btn btn-default"><i class="fa fa-bar-chart-o"></i> <span>查看详细信息</span></a>
+					<a href="{php echo url('account/post', array('id' => $row['uniacid']))}" class="btn btn-default"><i class="fa fa-pencil"></i> <span>编辑</span></a>
+					<a href="{php echo url('account/delete', array('uniacid' => $row['uniacid']))}" onclick="return confirm('删除主公众号其所属的子公众号及其它数据会全部删除，确认吗？');return false;" class="btn btn-default"><i class="fa fa-times"></i> <span>删除</span></a>
+					<a href="{php echo url('account/switch', array('id' => $row['uniacid']))}" onclick="return ajaxopen(this.href, function(s) {switchHandler(s)})" class="btn btn-default btn-danger"><i class="fa fa-cog"></i> <span>管理</span></a>
+				</div>
+			</li>
+			{loop $row['details'] $i}
+			<li class="child">
+				<div class="account-avatar"><img src="{if $i['headimg'] == 1}{$_W['attachurl']}headimg_{$i['weid']}.jpg?weid={$i['weid']}{else}{$default_img}{/if}" class="img-circle"></div>
+				<div class="account-content">
+					<p>{$i['name']}</p>
+					<p>接入状态：<span class="text-success">接入成功 <i class="icon-check-circle"></i></span></p>
+				</div>
+				<div class="account-btn">
+					<a href="{php echo url('account/bind/details', array('acid' => $i['acid'], 'uniacid' => $row['uniacid']))}" class="btn btn-default"><i class="fa fa-bar-chart-o"></i> <span>查看详细信息</span></a>
+					<a href="{php echo url('account/bind/post', array('acid' => $i['acid'], 'uniacid' => $row['uniacid']))}" class="btn btn-default"><i class="fa fa-pencil"></i> <span>编辑</span></a>
+					<a href="{php echo url('account/bind/delete', array('acid' => $i['acid'], 'uniacid' => $row['uniacid']))}" onclick="return confirm('确认删除吗？');return false;" class="btn btn-default"><i class="fa fa-times"></i> <span>删除</span></a>
+					<a href="{php echo url('account/switch', array('acid' => $i['acid'], 'id' => $row['uniacid']))}" onclick="return ajaxopen(this.href, function(s) {switchHandler(s)})" class="btn btn-default btn-danger"><i class="fa fa-cog"></i> <span>管理</span></a>		
+				</div>
+			</li>
+			{/loop}
+		{/loop}
+	</ul>
+	{$pager}
+	</div>
+<script>
+require(['jquery'], function($){
+	$(function() {
+		//处理子公众号的显示与隐藏
+		$('.clearfix > ul').delegate("li:not(.child) .account-avatar, li:not(.child) .account-content","click",function(e){
+			$(this).parent().toggleClass('on');
+			$(this).parent().nextUntil("li:not(.child)").slideToggle();
+		});
+	});
+});
+</script>
+{template 'common/footer-gw'}
